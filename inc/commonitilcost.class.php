@@ -55,32 +55,33 @@ class PluginPdfCommonItilCost extends PluginPdfCommon {
       $number = count($result);
 
       if (!$number) {
+         return;
          $pdf->setColumnsSize(100);
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), '<b>'.$classname::getTypeName(2).'</b>',
                             __('No item to display')));
       } else {
-         $pdf->setColumnsSize(60,20,20);
+         $pdf->setColumnsSize(50,30,20);
          $title = $classname::getTypeName($number);
          if (!empty(PluginPdfConfig::currencyName())) {
             $title = sprintf(__('%1$s (%2$s)'),
                              $classname::getTypeName($number), PluginPdfConfig::currencyName());
          }
-         $pdf->displayTitle("<b>".$title."</b>",
-                            "<b>".__('Duration')."</b>",
+         $pdf->displayTitle("<b>Κόστος</b>",
+                            "<b>".__('Διάρκεια')."</b>",
                             "<b>".CommonITILObject::getActionTime($job->fields['actiontime'])."</b>");
 
-         $pdf->setColumnsSize(20,10,10,10,9,10,10,10,10);
+         $pdf->setColumnsSize(20,10,10,10,10,10,10,10,10);
          $pdf->setColumnsAlign('center','center','center','left', 'right','right','right',
                                'right','right');
-         $pdf->displayTitle("<b><i>".__('Name')."</i></b>",
-               "<b><i>".__('Begin date')."</i></b>",
-               "<b><i>".__('End date')."</i></b>",
-               "<b><i>".__('Budget')."</i></b>",
-               "<b><i>".__('Duration')."</i></b>",
-               "<b><i>".__('Time cost')."</i></b>",
-               "<b><i>".__('Fixed cost')."</i></b>",
-               "<b><i>".__('Material cost')."</i></b>",
-               "<b><i>".__('Total cost')."</i></b>");
+         $pdf->displayTitle("<b><i>".__('Είδος')."</i></b>",
+               "<b><i>".__('Έναρξη')."</i></b>",
+               "<b><i>".__('Λήξη')."</i></b>",
+               "<b><i>".__('Προϋπολογισμός')."</i></b>",
+               "<b><i>".__('Διάρκεια')."</i></b>",
+               "<b><i>".__('Εργατοώρα')."</i></b>",
+               "<b><i>".__('Πάγια')."</i></b>",
+               "<b><i>".__('Υλικά')."</i></b>",
+               "<b><i>".__('Σύνολο')."</i></b>");
 
          $total          = 0;
          $total_time     = 0;
@@ -108,9 +109,9 @@ class PluginPdfCommonItilCost extends PluginPdfCommon {
             $total_material += $data['cost_material'];
             $total          += $cost;
          }
-         $pdf->setColumnsSize(52,8,10,10,10,10);
+         $pdf->setColumnsSize(50,10,10,10,10,10);
          $pdf->setColumnsAlign('right','right','right','right','right','right');
-         $pdf->displayLine('<b>'.__('Total').'</b>',
+         $pdf->displayLine('<b>'.__('Σύνολα').'</b>',
                            '<b>'.CommonITILObject::getActionTime($total_time).'</b>',
                            '<b>'.PluginPdfConfig::formatNumber($total_costtime).'</b>',
                            '<b>'.PluginPdfConfig::formatNumber($total_fixed).'</b>',

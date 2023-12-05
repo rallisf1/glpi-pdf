@@ -80,14 +80,16 @@ class PluginPdfSimplePDF {
 
       $pdf->SetCreator('GLPI');
       $pdf->SetAuthor('GLPI');
-      $font       = 'helvetica';
+      $font       = 'dejavusans';
       //$subsetting = true;
       $fonsize    = 8;
+      /*
       if (isset($_SESSION['glpipdffont']) && $_SESSION['glpipdffont']) {
          $font       = $_SESSION['glpipdffont'];
          //$subsetting = false;
       }
-      $pdf->setHeaderFont(Array($font, 'B', 8));
+      */
+      $pdf->setHeaderFont(Array($font, 'B', 16));
       $pdf->setFooterFont(Array($font, 'B', 8));
 
       //set margins
@@ -127,11 +129,11 @@ class PluginPdfSimplePDF {
          case "0.85.3" :
          case "0.85.4" :
          case "0.85.5" :
-            $this->pdf->SetHeaderData('fd_logo.jpg', 15, $msg, '');
+            $this->pdf->SetHeaderData('fd_logo.jpg', 50, $msg, '');
             break;
 
          default :
-            $this->pdf->SetHeaderData('fd_logo.png', 15, $msg, '');
+            $this->pdf->SetHeaderData('fd_logo.png', 50, $msg, '');
       }
    }
 

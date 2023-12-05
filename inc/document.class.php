@@ -63,8 +63,9 @@ class PluginPdfDocument extends PluginPdfCommon {
        $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('Document', 'Documents', $number).'</b>';
+      $title = '<b>'._n('Συνημμένο', 'Συνημμένα', $number).'</b>';
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          if ($number > $_SESSION['glpilist_limit']) {

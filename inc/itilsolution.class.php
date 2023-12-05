@@ -56,6 +56,7 @@ class PluginPdfITILSolution extends PluginPdfCommon {
 
       $title = '<b>'.__('Solution').'</b>';
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          $title = sprintf(__('%1$s: %2$s'), $title, $number);

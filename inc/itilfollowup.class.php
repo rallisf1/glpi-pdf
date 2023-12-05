@@ -73,6 +73,7 @@ class PluginPdfItilFollowup extends PluginPdfCommon {
       $title = '<b>'.ITILFollowup::getTypeName(2).'</b>';
 
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          if ($number > $_SESSION['glpilist_limit']) {

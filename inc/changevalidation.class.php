@@ -46,8 +46,8 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
 
       $dbu = new DbUtils();
 
-      $pdf->setColumnsSize(100);
-      $pdf->displayTitle("<b>".__('Approvals for the change', 'pdf')."</b>");
+      //$pdf->setColumnsSize(100);
+      //$pdf->displayTitle("<b>".__('Approvals for the change', 'pdf')."</b>");
 
       if (!Session::haveRightsOr('changevalidation',
                                  array_merge(CommonITILValidation::getCreateRights(),
@@ -65,15 +65,16 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $title = '<b>'.ChangeValidation::getTypeName(2).'</b>';
       if (!$number) {
+         return;
           $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
-         $title = sprintf(__('%1$s: %2$s'), $title, $number);
+         $title = sprintf(__('%1$s: %2$s'), "<b>". __('Εγκρίσεις') . "</b>", $number);
          $pdf->displayTitle($title);
-
+//"<b><i>".__('Τύπος')."</i></b>"
          $pdf->setColumnsSize(10,10,15,20,10,15,20);
-         $pdf->displayTitle(_x('item', 'State'), __('Request date'), __('Approval requester'),
-                            __('Request comments'), __('Approval status'), __('Approver'),
-                            __('Approval comments'));
+         $pdf->displayTitle("<b><i>"._x('item', 'Κατάσταση')."</i></b>", "<b><i>".__('Ημ. Αίτησης')."</i></b>",
+         "<b><i>".__('Αιτών')."</i></b>", "<b><i>".__('Σχόλια')."</i></b>", "<b><i>".__('Ημ. Έγκρισης')."</i></b>",
+         "<b><i>".__('Υπογράφων')."</i></b>", "<b><i>".__('Απάντηση')."</i></b>");
 
          foreach ($result as $row) {
             $pdf->displayLine(TicketValidation::getStatus($row['status']),
@@ -82,7 +83,7 @@ class PluginPdfChangeValidation extends PluginPdfCommon {
                               trim($row["comment_submission"]),
                               Html::convDateTime($row["validation_date"]),
                               $dbu->getUserName($row["users_id_validate"]),
-                              trim($row["comment_validation"]));
+                              Html::clean(trim($row["comment_validation"])));
          }
       }
       $pdf->displaySpace();

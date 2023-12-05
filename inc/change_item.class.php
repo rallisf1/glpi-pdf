@@ -60,17 +60,18 @@ class PluginPdfChange_Item extends PluginPdfCommon {
       $number = count($result);
 
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('Item', 'Items', $number).'</b>';
+      $title = '<b>'._n('Συσκευή', 'Συσκευές', $number).'</b>';
 
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          $title = sprintf(__('%1$s: %2$s'), $title, $number);
          $pdf->displayTitle($title);
 
          $pdf->setColumnsSize(20,20,26,17,17);
-         $pdf->displayTitle("<b><i>".__('Type'), __('Name'), __('Entity'), __('Serial number'),
-                                  __('Inventory number')."</i></b>");
+         $pdf->displayTitle("<b><i>".__('Τύπος')."</i></b>", "<b><i>".__('Όνομα')."</i></b>", "<b><i>".__('Κάτοχος')."</i></b>",
+            "<b><i>".__('SN')."</i></b>","<b><i>".__('SKU')."</i></b>");
 
          $totalnb = 0;
          foreach ($result as $row) {
@@ -133,7 +134,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             }
          }
     //  }
-      $pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Total'), $totalnb));
+      //$pdf->displayLine("<b><i>".sprintf(__('%1$s = %2$s')."</b></i>", __('Σύνολο'), $totalnb));
       }
    }
 
@@ -207,6 +208,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $title = '<b>'.Change::getTypeName($number).'</b>';
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          $pdf->displayTitle("<b>".sprintf(_n('Last %d change','Last %d changes', $number)."</b>",
@@ -219,11 +221,11 @@ class PluginPdfChange_Item extends PluginPdfCommon {
             }
             $pdf->setColumnsAlign('center');
             $col = '<b><i>ID '.$job->fields["id"].'</i></b>, '.
-                  sprintf(__('%1$s: %2$s'), __('Status'), Change::getStatus($job->fields["status"]));
+                  sprintf(__('%1$s: %2$s'), __('Κατάσταση'), Change::getStatus($job->fields["status"]));
 
             if (count($_SESSION["glpiactiveentities"]) > 1) {
                if ($job->fields['entities_id'] == 0) {
-                  $col = sprintf(__('%1$s (%2$s)'), $col, __('Root entity'));
+                  $col = sprintf(__('%1$s (%2$s)'), $col, __('Κάτοχος'));
                } else {
                   $col = sprintf(__('%1$s (%2$s)'), $col,
                         Dropdown::getDropdownName("glpi_entities", $job->fields['entities_id']));
@@ -233,36 +235,36 @@ class PluginPdfChange_Item extends PluginPdfCommon {
 
             $pdf->setColumnsAlign('left');
 
-            $col = '<b><i>'.sprintf(__('Opened on %s').'</i></b>',
+            $col = '<b><i>'.sprintf(__('Ανοίχτηκε %s').'</i></b>',
                                     Html::convDateTime($job->fields['date']));
             if ($job->fields['begin_waiting_date']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('Put on hold on %s').'</i></b>',
+                              '<b><i>'.sprintf(__('Σε παύση από %s').'</i></b>',
                                                Html::convDateTime($job->fields['begin_waiting_date'])));
             }
             if (in_array($job->fields["status"], $job->getSolvedStatusArray())
                 || in_array($job->fields["status"], $job->getClosedStatusArray())) {
 
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('Solved on %s').'</i></b>',
+                              '<b><i>'.sprintf(__('Λύθηκε %s').'</i></b>',
                                                Html::convDateTime($job->fields['solvedate'])));
             }
             if (in_array($job->fields["status"], $job->getClosedStatusArray())) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('Closed on %s').'</i></b>',
+                              '<b><i>'.sprintf(__('Έκλεισε %s').'</i></b>',
                                                Html::convDateTime($job->fields['closedate'])));
             }
             if ($job->fields['time_to_resolve']) {
                $col = sprintf(__('%1$s, %2$s'), $col,
-                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',__('Time to resolve'),
+                              '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>',__('ΕΤΑ'),
                                                Html::convDateTime($job->fields['time_to_resolve'])));
             }
             $pdf->displayLine($col);
 
-            $col = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Priority').'</i></b>',
+            $col = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Προτεραιότητα').'</i></b>',
                                     Change::getPriorityName($job->fields["priority"]));
             if ($job->fields["itilcategories_id"]) {
-               $cat = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Category').'</i></b>',
+               $cat = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Κατηγορία').'</i></b>',
                                        Dropdown::getDropdownName('glpi_itilcategories',
                                                                  $job->fields["itilcategories_id"]));
                $col = sprintf(__('%1$s - %2$s'), $col, $cat);
@@ -275,7 +277,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                                      $dbu->getUserName($job->fields["users_id_lastupdater"]));
             }
 
-            $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Last update').'</i></b>',
+            $pdf->displayLine('<b><i>'.sprintf(__('%1$s: %2$s'), __('Ενημερώθηκε').'</i></b>',
                   $lastupdate));
 
             $col   = '';
@@ -309,7 +311,7 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                }
             }
             if ($col) {
-               $texte = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Requester').'</i></b>', '');
+               $texte = '<b><i>'.sprintf(__('%1$s: %2$s'), __('Αιτών').'</i></b>', '');
                $pdf->displayText($texte, $col, 1);
             }
 
@@ -344,13 +346,13 @@ class PluginPdfChange_Item extends PluginPdfCommon {
                }
             }
             if ($col) {
-               $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Assigned to'), '');
+               $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Τεχνικός'), '');
                $pdf->displayText($texte, $col, 1);
             }
 
-            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Associated items'), '');
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Σχετικά με'), '');
 
-            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Title'), '');
+            $texte = '<b><i>'.sprintf(__('%1$s: %2$s').'</i></b>', __('Τίτλος'), '');
             $pdf->displayText($texte, $job->fields["name"], 1);
          }
       }

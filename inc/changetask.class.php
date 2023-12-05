@@ -57,6 +57,7 @@ class PluginPdfChangeTask extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
       $title = "<b>".ChangeTask::getTypeName(2)."</b>";
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          $title = sprintf(__('%1$s: %2$s'), $title, $number);

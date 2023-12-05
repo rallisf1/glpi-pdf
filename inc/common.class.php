@@ -294,6 +294,11 @@ abstract class PluginPdfCommon extends CommonGLPI {
    **/
    private function addHeader($ID) {
 
+      if($this->obj->getType() == 'Change') {
+         $this->pdf->setHeader('ΔΕΛΤΙΟ ΕΠΙΣΚΕΨΗΣ ΤΕΧΝΙΚΟΥ');
+         return true;
+      }
+
       $entity = '';
       if ($this->obj->getFromDB($ID) && $this->obj->can($ID, READ)) {
          if ($this->obj->getType() != 'Ticket'
@@ -326,11 +331,12 @@ abstract class PluginPdfCommon extends CommonGLPI {
       $rand  = mt_rand();
 
       $number = count($notes);
-
+      if(!$number) return;
       $pdf->setColumnsSize(100);
-      $title = '<b>'._n('Note', 'Notes', $number).'</b>';
+      $title = '<b>'._n('Σημείωση', 'Σημειώσεις', $number).'</b>';
 
       if (!$number) {
+         return;
          $pdf->displayTitle(sprintf(__('%1$s: %2$s'), $title, __('No item to display')));
       } else {
          if ($number > $_SESSION['glpilist_limit']) {
@@ -413,7 +419,7 @@ abstract class PluginPdfCommon extends CommonGLPI {
       }
       $config = PluginPdfConfig::getInstance();
       if (!empty($config->getField('add_text'))) {
-         $this->pdf->displayText('<b><i>'.$config->getField('add_text').'</i></b>', '', 5);
+         $this->pdf->displayTitle('<b><i>'.$config->getField('add_text').'</i></b>');
       }
 
       if($render) {
