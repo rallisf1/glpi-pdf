@@ -42,7 +42,6 @@ class PluginPdfChange extends PluginPdfCommon {
 
 
    static function pdfMain(PluginPdfSimplePDF $pdf, Change $job) {
-
       $dbu = new DbUtils();
 
       $ID = $job->getField('id');
@@ -51,9 +50,15 @@ class PluginPdfChange extends PluginPdfCommon {
       }
 
       if (count($_SESSION['glpiactiveentities'])>1) {
-         $entity = " (".Dropdown::getDropdownName("glpi_entities", $job->fields["entities_id"]).")";
+         $entity = Dropdown::getDropdownName("glpi_entities", $job->fields["entities_id"]);
       } else {
          $entity = '';
+      }
+
+      if (count($_SESSION['glpiactiveentities'])>1) {
+         $location = Dropdown::getDropdownName("glpi_locations", $job->fields["locations_id"]);
+      } else {
+         $location = '';
       }
 
       $recipient_name='';
@@ -128,6 +133,12 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->setColumnsSize(100);
 
       $pdf->displayTitle("<b>".$job->fields["name"]."</b>");
+
+      $pdf->setColumnsSize(50,50);
+
+      $pdf->displayLine(
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Πελάτης')."</i></b>", $entity),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Τοποθεσία')."</i></b>", $location));
 
       $pdf->setColumnsSize(33.3,33.3,33.3);
 
