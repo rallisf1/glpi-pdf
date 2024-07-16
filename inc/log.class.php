@@ -72,6 +72,7 @@ class PluginPdfLog extends PluginPdfCommon {
                $tot++;
             }
          } // Each log
+         $pdf->setColumnsSize(100);
       }
       $pdf->displaySpace();
    }

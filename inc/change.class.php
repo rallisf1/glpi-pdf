@@ -132,7 +132,7 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->setColumnsSize(100);
 
-      $pdf->displayTitle("<b>".$job->fields["name"]."</b>");
+      $pdf->displayTitle("<b>".$job->fields["name"]." (".$ID.")</b>");
 
       $pdf->setColumnsSize(50,50);
 
@@ -145,24 +145,18 @@ class PluginPdfChange extends PluginPdfCommon {
       $pdf->displayLine(
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Ημερομηνία Αναφοράς')."</i></b>", Html::convDateTime($job->fields["date"])),
          '<b><i>'.sprintf(__('%1$s: %2$s'), __('Εντολέας')."</i></b>", $recipient_name),
-         "<b><i>".sprintf(__('%1$s: %2$s'), __('Επείγον')."</i></b>",
-                          Toolbox::stripTags($job->getUrgencyName($job->fields["urgency"]))));
+         //"<b><i>".sprintf(__('%1$s: %2$s'), __('Επείγον')."</i></b>",
+         //                 Toolbox::stripTags($job->getUrgencyName($job->fields["urgency"]))));
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Υπεύθυνος')."</i></b>", $observers));
+
+      $pdf->setColumnsSize(50,50);
 
       $pdf->displayLine(
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Ενημερώθηκε').'</i></b>', $lastupdate),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Υπεύθυνος')."</i></b>", $observers),
-         "<b><i>". sprintf(__('%1$s: %2$s'), __('Επίπτωση')."</i></b>",
-                          Toolbox::stripTags($job->getImpactName($job->fields["impact"]))));
-
-      $pdf->displayLine(
-         "<b><i>".sprintf(__('%1$s: %2$s'), __('Κατάσταση')."</i></b>",
-                          Toolbox::stripTags($job->getStatus($job->fields["status"])). $status),
-         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Τεχνικός')."</i></b>", $technicians),
+         '<b><i>'.sprintf(__('%1$s: %2$s'), __('Τεχνικός')."</i></b>", preg_replace('/\s\(\d+\)/m', '', $technicians)),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Προτεραιότητα')."</i></b>",
                            Toolbox::stripTags($job->getPriorityName($job->fields["priority"]))));
 
       $pdf->displayLine(
-         $due,
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Συνολική Διάρκεια')."</i></b>",
                           Toolbox::stripTags(CommonITILObject::getActionTime($job->fields["actiontime"]))),
          "<b><i>".sprintf(__('%1$s: %2$s'), __('Κατηγορία')."</i></b>",
@@ -184,11 +178,10 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->setColumnsSize(10, 90);
 
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Impacts')."</i></b>",
-                                $job->fields['impactcontent']));
+      $pdf->displayText($job->fields['impactcontent']);
 
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Control list')."</i></b>",
-                                $job->fields['controlistcontent']));
+      //$pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Control list')."</i></b>",
+      //                          $job->fields['controlistcontent']));
    }
 
 
@@ -199,16 +192,31 @@ class PluginPdfChange extends PluginPdfCommon {
 
       $pdf->setColumnsSize(10, 90);
 
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Deployment plan')."</i></b>",
-                                $job->fields['rolloutplancontent']));
+      $pdf->displayText($job->fields['rolloutplancontent']);
 
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Backup plan')."</i></b>",
-                                $job->fields['backoutplancontent']));
-
-      $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Checklist')."</i></b>",
-                                $job->fields['checklistcontent']));
+      //$pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Backup plan')."</i></b>",
+      //                          $job->fields['backoutplancontent']));
+      if(strlen($job->fields['checklistcontent']) > 0) {
+         $pdf->displayText(sprintf(__('%1$s: %2$s'), "<b><i>".__('Checklist')."</i></b>",
+         $job->fields['checklistcontent']));
+      }
    }
 
+   static function pdfSign(PluginPdfSimplePDF $pdf, Change $job) {
+
+      $pdf->setColumnsSize(70, 30);
+
+      $feedbackForm = '<br /><br />
+    <span>□  Άψογα            </span><span>□  Καλά            </span><br />
+    <span>□  Πολύ Καλά        </span><span>□  Μέτρια          </span>
+';
+
+      $pdf->displayLine(
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Αξιολόγηση υπηρεσιών')."</i></b>", $feedbackForm),
+         "<b><i>".sprintf(__('%1$s: %2$s'), __('Υπογραφή υπευθύνου')."</i></b>","<br /><br /><br /><br />"));
+
+      $pdf->setColumnsSize(100);
+   }
 
    static function pdfStat(PluginPdfSimplePDF $pdf, Change $job) {
 
@@ -301,7 +309,8 @@ class PluginPdfChange extends PluginPdfCommon {
             if (Session::haveRight('document', READ)) {
                PluginPdfDocument::pdfForItem($pdf, $item);
             }
-            PluginPdfITILSolution::pdfForItem($pdf, $item);     
+            PluginPdfITILSolution::pdfForItem($pdf, $item);
+            self::pdfSign($pdf, $item);
             break;
 
          case 'Change$1' :
